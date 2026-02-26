@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LVEF Data - {{ patient_id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background: #17a2b8; color: white; }
+        .form-group { margin-bottom: 15px; }
+        input, button { padding: 10px; margin: 5px; }
+        .positive { color: #28a745; font-weight: bold; }
+        .negative { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📈 LVEF Data Management - {{ patient_id }}</h1>
+            
+            <h3>Add New Measurement</h3>
+            <form method="post">
+                <input type="hidden" name="patient_id" value="{{ patient_id }}">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" name="measurement_date" required>
+                </div>
+                <div class="form-group">
+                    <label>LVEF Value (%):</label>
+                    <input type="number" name="lvef_value" step="0.1" min="0" max="100" required>
+                </div>
+                <div class="form-group">
+                    <label>Notes:</label>
+                    <input type="text" name="notes" placeholder="Optional notes">
+                </div>
+                <button type="submit">Add Measurement</button>
+            </form>
+        </div>
+
+        {% if lvef_data %}
+        <div class="card">
+            <h3>LVEF Measurements History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>LVEF (%)</th>
+                        <th>Improvement</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for measurement in lvef_data %}
+                    <tr>
+                        <td>{{ measurement[0] }}</td>
+                        <td>{{ "%.1f"|format(measurement[1]) }}%</td>
+                        <td class="{{ 'positive' if measurement[2] and measurement[2] > 0 else 'negative' }}">
+                            {% if measurement[2] is not none %}
+                                {{ "%+.1f"|format(measurement[2]) }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ measurement[3] or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="card" style="text-align: center;">
+            <a href="/patient_history?patient_id={{ patient_id }}">Back to Patient History</a> |
+            <a href="/">New Search</a>
+        </div>
+    </div>
+</body>
+</html>

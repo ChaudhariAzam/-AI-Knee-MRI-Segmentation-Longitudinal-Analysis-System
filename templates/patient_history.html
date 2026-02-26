@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient History - {{ patient_id }}</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .positive { color: #28a745; font-weight: bold; }
+        .negative { color: #dc3545; font-weight: bold; }
+        .btn { 
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white; 
+            padding: 10px 20px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            margin: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Patient History - {{ patient_id }}</h1>
+            <p>Total Studies: {{ report_data.total_studies }}</p>
+        </div>
+
+        <div class="card">
+            <h2>📊 Studies Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Side</th>
+                        <th>Protocol</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for study in studies %}
+                    <tr>
+                        <td>{{ study[1] }}</td>
+                        <td>{{ study[2] }}</td>
+                        <td>{{ study[3] }}</td>
+                        <td>
+                            <a href="/success?patient_id={{ patient_id }}&side={{ study[2] }}&date={{ study[1] }}" class="btn">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if report_data.volume_trends %}
+        <div class="card">
+            <h2>📈 Volume Trends</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Structure</th>
+                        <th>First Volume (cm³)</th>
+                        <th>Last Volume (cm³)</th>
+                        <th>Change</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for structure, trend in report_data.volume_trends.items() %}
+                    <tr>
+                        <td><strong>{{ structure }}</strong></td>
+                        <td>{{ "%.2f"|format(trend.first_volume) }}</td>
+                        <td>{{ "%.2f"|format(trend.last_volume) }}</td>
+                        <td class="{{ 'positive' if trend.change_percentage > 0 else 'negative' }}">
+                            {{ "%+.1f"|format(trend.change_percentage) }}%
+                        </td>
+                        <td>{{ trend.trend }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div style="text-align: center;">
+                <a href="/" class="btn">🔍 New Search</a>
+                <a href="/lvef_data?patient_id={{ patient_id }}" class="btn">📈 Manage LVEF Data</a>
+                <a href="/export_report?patient_id={{ patient_id }}" class="btn">📄 Export Report</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
