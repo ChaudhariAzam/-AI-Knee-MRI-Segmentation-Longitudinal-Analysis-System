@@ -1,180 +1,206 @@
-# -AI-Knee-MRI-Segmentation-Longitudinal-Analysis-System
-📌 Project Overview
+# 🦵 AI Knee MRI Segmentation & Longitudinal Analysis System
 
-This project is a full-stack AI-powered Knee MRI segmentation and clinical tracking system built using:
+## 📌 Project Overview
 
-🧠 nnUNet v2 for automated 3D segmentation
+This project is a full-stack AI-powered Knee MRI segmentation and
+clinical tracking system.
 
-🏥 Orthanc PACS integration for DICOM retrieval
+It integrates:
 
-🔄 dcm2niix for DICOM → NIfTI conversion
+-   Orthanc PACS (DICOM server)
+-   dcm2niix (DICOM → NIfTI conversion)
+-   nnUNet v2 (3D segmentation)
+-   Flask (Web Interface)
+-   SQLite (Patient history database)
+-   NiBabel, NumPy, SciPy (Medical image processing)
 
-🧪 NiBabel & NumPy for medical image processing
+------------------------------------------------------------------------
 
-🌐 Flask for web-based workflow
+## 🏗 System Workflow
 
-🗄 SQLite for structured patient history & volume tracking
+Orthanc PACS\
+↓\
+Async DICOM Download\
+↓\
+dcm2niix Conversion\
+↓\
+Image Reorientation (RAS)\
+↓\
+Resampling (256×256×144)\
+↓\
+nnUNet v2 Segmentation\
+↓\
+Volume Calculation\
+↓\
+Database Storage\
+↓\
+3D Visualization & Trend Analysis
 
-The system automatically:
+------------------------------------------------------------------------
 
-Retrieves MRI studies from Orthanc
+## 🎯 Features
 
-Filters for the target protocol (t2_de3d_we_sag_iso)
+### ✅ Automatic Protocol Detection
 
-Converts DICOM → NIfTI
+Processes only: `t2_de3d_we_sag_iso`
 
-Preprocesses images (reorientation + resampling)
-
-Runs nnUNet segmentation
-
-Computes anatomical volumes
-
-Stores longitudinal data
-
-Provides interactive 3D visualization
-
-Tracks volume trends & LVEF data over time
-
-🏗 System Architecture
-4
-
-Pipeline Flow:
-
-Orthanc PACS
-     ↓
-DICOM Download (Async)
-     ↓
-dcm2niix Conversion
-     ↓
-Image Reorientation (RAS)
-     ↓
-Resampling (256×256×144)
-     ↓
-nnUNet v2 Segmentation
-     ↓
-Volume Calculation
-     ↓
-SQLite Storage
-     ↓
-Web Visualization & Trend Analysis
-🎯 Key Features
-🔍 Automatic Protocol Detection
-
-Only processes MRI series containing:
-
-t2_de3d_we_sag_iso
-
-With automatic:
-
-Laterality detection (Left / Right)
-
-Metadata validation
-
-Fallback intelligent selection
-
-🤖 AI Segmentation
+### ✅ AI Segmentation
 
 Uses nnUNet v2 (3d_fullres configuration)
 
-Disables TTA for faster inference
+Segmented Structures: - Femur - Tibia - Fibula - Patella - Cartilage
 
-Validates output labels
+### ✅ Volume Calculation
 
-Ensures non-empty segmentation masks
+-   Computes voxel counts
+-   Converts mm³ → cm³
+-   Stores structured metrics
 
-Segmented Structures:
+### ✅ Longitudinal Tracking
 
-Label	Structure
-1	Femur
-2	Tibia
-3	Fibula
-4	Patella
-5	Cartilage
-📊 Volume Computation
+-   Study comparison
+-   \% volume change
+-   Trend detection
+-   Time interval calculation
 
-Voxel-based calculation
+### ✅ 3D Multi-View Visualization
 
-Converts mm³ → cm³
+-   Axial View
+-   Coronal View
+-   Sagittal View
+-   Mouse & keyboard navigation
+-   Touch support
 
-Stores:
+### ✅ LVEF Data Management
 
-Voxel count
+-   Stores cardiac LVEF values
+-   Calculates improvement percentage
+-   Historical tracking
 
-Volume (mm³)
+------------------------------------------------------------------------
 
-Volume (cm³)
+## 🗄 Database Tables
 
-📈 Longitudinal Analysis
+-   patients
+-   studies
+-   volume_measurements
+-   lvef_measurements
 
-The system automatically:
+------------------------------------------------------------------------
 
-Tracks multiple studies per patient
+## ⚙️ Requirements
 
-Computes % volume change
+### System Tools
 
-Detects increasing / decreasing trends
+-   Python 3.9+
+-   nnUNet v2 installed
+-   dcm2niix installed
+-   Orthanc PACS running
 
-Calculates total improvement
+### Python Libraries
 
-Tracks time intervals
+-   flask
+-   aiohttp
+-   nibabel
+-   numpy
+-   scipy
+-   pandas
+-   pydicom
+-   matplotlib
+-   scikit-image
 
-🖥 Interactive 3D Multi-View Viewer
-4
+Install with:
 
-Includes:
+``` bash
+pip install -r requirements.txt
+```
 
-Axial View
+------------------------------------------------------------------------
 
-Coronal View
+## 🚀 How to Run
 
-Sagittal View
+1️⃣ Verify tools:
 
-Scroll-wheel slice navigation
+``` bash
+dcm2niix --version
+nnUNetv2_predict --help
+```
 
-Arrow-key navigation
+2️⃣ Start server:
 
-Touch support
+``` bash
+python app.py
+```
 
-Slice synchronization
+Server runs at:
 
-Real-time coordinate display
+http://0.0.0.0:7050
 
-🗄 Database Schema
+------------------------------------------------------------------------
 
-SQLite Tables:
+## 📂 Folder Structure
 
-patients
+    dicom_data/
+    nifti_output/
+    temp_input/
+    temp_output/
+    knee_segmentation.db
+    app.py
 
-studies
+------------------------------------------------------------------------
 
-volume_measurements
+## 📊 Web Routes
 
-lvef_measurements
+  Route              Description
+  ------------------ ----------------------
+  /                  Patient search
+  /select_knee       Protocol filtering
+  /process           Processing animation
+  /success           Segmentation results
+  /patient_history   Historical tracking
+  /lvef_data         LVEF management
+  /export_report     Export reports
 
-Supports:
+------------------------------------------------------------------------
 
-Historical comparisons
+## 🔐 Validation & Safety
 
-Volume trend reports
+-   DICOM validation
+-   File integrity checks
+-   Segmentation label verification
+-   Empty mask detection
+-   Retry logic for downloads
 
-LVEF improvement tracking
+------------------------------------------------------------------------
 
-Structured patient reports
+## 📈 Future Enhancements
 
-🔌 Orthanc Integration
+-   PDF export
+-   Excel export
+-   Authentication system
+-   Cloud deployment
+-   REST API version
+-   Multi-organ segmentation
 
-Async downloads via aiohttp
+------------------------------------------------------------------------
 
-Supports retry logic
+## 🧠 Clinical Applications
 
-Parallel instance downloading
+-   Osteoarthritis monitoring
+-   Cartilage degeneration tracking
+-   Post-operative comparison
+-   Research dataset generation
+-   PACS-AI hospital integration
 
-Metadata parsing for:
+------------------------------------------------------------------------
 
-ProtocolName
+## 👨‍⚕️ Built For
 
-SeriesDescription
+Radiology departments\
+Orthopedic researchers\
+Medical AI startups\
+Clinical research environments
 
-Laterality
+------------------------------------------------------------------------
 
-BodyPartExamined
+© 2026 Knee Segmentation AI System
